@@ -126,6 +126,25 @@ describe("paper size", () => {
   });
 });
 
+describe("paper kind", () => {
+  [1, 2, 3].forEach((paperKind) => {
+    it(`allows to set paper kind to ${paperKind}`, async () => {
+      const filename = "assets/sample.pdf";
+      const options = { paperKind };
+
+      await print(filename, options);
+
+      expect(execAsync).toHaveBeenCalledWith(sumatraPdfPath, [
+        "-print-to-default",
+        "-silent",
+        "-print-settings",
+        `paperkind=${paperKind}`,
+        filename,
+      ]);
+    });
+  });
+});
+
 describe("orientation", () => {
   ["portrait", "landscape"].forEach((orientation) => {
     it("allows to specify orientation", async () => {
