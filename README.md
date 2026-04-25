@@ -3,7 +3,7 @@
 [![codecov](https://codecov.io/gh/artiebits/pdf-to-printer/branch/master/graph/badge.svg)](https://codecov.io/gh/artiebits/pdf-to-printer)
 ![npm](https://img.shields.io/npm/dw/pdf-to-printer)
 
-A powerful Node.js and Electron utility for printing PDFs and images to Windows printers.
+Print PDF files and images directly to Windows printers from Node.js or Electron. Works with office printers, label printers (Zebra, Rollo), and network printers alike.
 
 ## Features
 
@@ -14,6 +14,11 @@ A powerful Node.js and Electron utility for printing PDFs and images to Windows 
 - **Fast and reliable** using SumatraPDF engine
 - **TypeScript support** with full type definitions
 - **Windows only** - for Unix-like systems, see [unix-print](https://github.com/artiebits/unix-print)
+
+## Requirements
+
+- **Windows** — for macOS and Linux, use [unix-print](https://github.com/artiebits/unix-print) (same API, same author)
+- Node.js 14 or later
 
 ## Installation
 
@@ -48,6 +53,48 @@ const defaultPrinter = await getDefaultPrinter();
 console.log(defaultPrinter?.name);
 ```
 
+## Common Use Cases
+
+**Shipping label printing** — send generated labels directly to a Zebra or Rollo printer in an order fulfillment backend:
+
+```typescript
+await print("label.pdf", {
+  printer: "Zebra ZTC ZPL",
+  paperSize: "4x6",
+  scale: "noscale",
+});
+```
+
+**Invoice and receipt printing** — print from a Node.js server without any user interaction:
+
+```typescript
+await print("invoice.pdf", {
+  printer: "Office HP LaserJet",
+  silent: true,
+  copies: 2,
+  side: "duplex",
+});
+```
+
+**Electron desktop app** — paths inside `.asar` archives are handled automatically:
+
+```typescript
+import path from "path";
+import { print } from "pdf-to-printer";
+
+await print(path.join(__dirname, "report.pdf"), {
+  printer: "Microsoft Print to PDF",
+  orientation: "landscape",
+  paperSize: "A4",
+});
+```
+
+**Print specific pages only:**
+
+```typescript
+await print("document.pdf", { pages: "1-3,5", subset: "odd" });
+```
+
 ## Support This Project
 
 If you rely on this package, please consider supporting it. Maintaining an open source project takes time and your support would be greatly appreciated.
@@ -75,11 +122,11 @@ Prints a PDF file to a printer.
 | ---------------- | --------- | ------------------------------------------------------------------------- |
 | `printer`        | `string`  | Name of the printer to use (default: system default printer)              |
 | `pages`          | `string`  | Pages to print (e.g., "1-3,5" or "1,3,5")                                 |
-| `subset`         | `string`  | Print only odd or even pages (valid: "odd", "even")                       |
-| `orientation`    | `string`  | Page orientation (valid: "portrait", "landscape")                         |
-| `scale`          | `string`  | Content scaling (valid: "noscale", "shrink", "fit")                       |
-| `monochrome`     | `boolean` | Print in black and white                                                  |
-| `side`           | `string`  | Duplex printing (valid: "duplex", "duplexshort", "duplexlong", "simplex") |
+| `subset`         | `"odd" \| "even"`                                    | Print only odd or even pages                          |
+| `orientation`    | `"portrait" \| "landscape"`                          | Page orientation                                      |
+| `scale`          | `"noscale" \| "shrink" \| "fit"`                     | Content scaling                                       |
+| `monochrome`     | `boolean`                                            | Print in black and white                              |
+| `side`           | `"duplex" \| "duplexshort" \| "duplexlong" \| "simplex"` | Duplex printing mode                              |
 | `bin`            | `string`  | Paper tray/bin to use (number or name)                                    |
 | `paperSize`      | `string`  | Paper size (e.g., "A4", "letter", "legal")                                |
 | `silent`         | `boolean` | Suppress error messages                                                   |
