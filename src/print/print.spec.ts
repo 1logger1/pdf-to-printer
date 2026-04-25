@@ -35,13 +35,13 @@ const sumatraPdfPath = "mocked_path_SumatraPDF-3.4.6-32.exe";
 
 it("throws when no file is specified.", async () => {
   // @ts-ignore
-  await expect(print()).rejects.toMatch("No PDF specified");
+  await expect(print()).rejects.toThrow("No PDF specified");
 });
 
 it("throws when file not found", async () => {
   mockedExistsSync.mockImplementation(() => false);
 
-  await expect(print("file.txt")).rejects.toMatch("No such file");
+  await expect(print("file.txt")).rejects.toThrow("No such file");
 });
 
 it("sends the PDF file to the default printer", async () => {
@@ -165,11 +165,12 @@ describe("orientation", () => {
 
   it("throws when incorrect orientation provided", () => {
     const filename = "assets/sample.pdf";
+    // @ts-ignore
     const options = {
       orientation: "foo",
     };
 
-    return expect(print(filename, options)).rejects.toBe(
+    return expect(print(filename, options)).rejects.toThrow(
       "Invalid orientation provided. Valid names: portrait, landscape",
     );
   });
@@ -233,11 +234,12 @@ describe("subset", () => {
 
   it("throws when incorrect subset provided", () => {
     const filename = "assets/sample.pdf";
+    // @ts-ignore
     const options = {
       subset: "foo",
     };
 
-    return expect(print(filename, options)).rejects.toBe(
+    return expect(print(filename, options)).rejects.toThrow(
       "Invalid subset provided. Valid names: odd, even",
     );
   });
@@ -263,11 +265,12 @@ describe("scale", () => {
 
   it("throws when incorrect scale provided", () => {
     const filename = "assets/sample.pdf";
+    // @ts-ignore
     const options = {
       scale: "foo",
     };
 
-    return expect(print(filename, options)).rejects.toBe(
+    return expect(print(filename, options)).rejects.toThrow(
       "Invalid scale provided. Valid names: noscale, shrink, fit",
     );
   });
@@ -293,11 +296,12 @@ describe("side", () => {
 
   it("throws when incorrect side provided", () => {
     const filename = "assets/sample.pdf";
+    // @ts-ignore
     const options = {
       side: "foo",
     };
 
-    return expect(print(filename, options)).rejects.toBe(
+    return expect(print(filename, options)).rejects.toThrow(
       "Invalid side provided. Valid names: duplex, duplexshort, duplexlong, simplex",
     );
   });

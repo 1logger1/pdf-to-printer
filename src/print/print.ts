@@ -10,11 +10,11 @@ import throwIfUnsupportedOperatingSystem from "../utils/throw-if-unsupported-os"
 export interface PrintOptions {
   printer?: string;
   pages?: string;
-  subset?: string;
-  orientation?: string;
-  scale?: string;
+  subset?: "odd" | "even";
+  orientation?: "portrait" | "landscape";
+  scale?: "noscale" | "shrink" | "fit";
   monochrome?: boolean;
-  side?: string;
+  side?: "duplex" | "duplexshort" | "duplexlong" | "simplex";
   bin?: string;
   paperSize?: string;
   paperKind?: number;
@@ -56,8 +56,8 @@ export default async function print(
   options: PrintOptions = {},
 ): Promise<void> {
   throwIfUnsupportedOperatingSystem();
-  if (!pdf) throw "No PDF specified";
-  if (!fs.existsSync(pdf)) throw "No such file";
+  if (!pdf) throw new Error("No PDF specified");
+  if (!fs.existsSync(pdf)) throw new Error("No such file");
 
   let sumatraPdf =
     options.sumatraPdfPath || path.join(__dirname, "SumatraPDF-3.4.6-32.exe");
@@ -119,7 +119,9 @@ function getPrintSettings(options: PrintOptions): string[] {
     if (validSubsets.includes(subset)) {
       printSettings.push(subset);
     } else {
-      throw `Invalid subset provided. Valid names: ${validSubsets.join(", ")}`;
+      throw new Error(
+        `Invalid subset provided. Valid names: ${validSubsets.join(", ")}`,
+      );
     }
   }
 
@@ -127,9 +129,9 @@ function getPrintSettings(options: PrintOptions): string[] {
     if (validOrientations.includes(orientation)) {
       printSettings.push(orientation);
     } else {
-      throw `Invalid orientation provided. Valid names: ${validOrientations.join(
-        ", ",
-      )}`;
+      throw new Error(
+        `Invalid orientation provided. Valid names: ${validOrientations.join(", ")}`,
+      );
     }
   }
 
@@ -137,7 +139,9 @@ function getPrintSettings(options: PrintOptions): string[] {
     if (validScales.includes(scale)) {
       printSettings.push(scale);
     } else {
-      throw `Invalid scale provided. Valid names: ${validScales.join(", ")}`;
+      throw new Error(
+        `Invalid scale provided. Valid names: ${validScales.join(", ")}`,
+      );
     }
   }
 
@@ -151,7 +155,9 @@ function getPrintSettings(options: PrintOptions): string[] {
     if (validSides.includes(side)) {
       printSettings.push(side);
     } else {
-      throw `Invalid side provided. Valid names: ${validSides.join(", ")}`;
+      throw new Error(
+        `Invalid side provided. Valid names: ${validSides.join(", ")}`,
+      );
     }
   }
 
