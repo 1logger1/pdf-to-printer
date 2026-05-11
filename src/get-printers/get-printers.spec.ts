@@ -12,54 +12,60 @@ afterEach(() => {
   mockedExecAsync.mockRestore();
 });
 
-const mockPrinterListStdout = `
+const mockPrintersData: any[] = [
+  {
+    DeviceID: "ZDesigner ZR668 Plus (ZPL) (已重定向 2)",
+    Name: "ZDesigner ZR668 Plus (ZPL) (已重定向 2)",
+    PrinterPaperNames: ["Custom"],
+  },
+  {
+    DeviceID: "ZDesigner ZR668 (ZPL) (1) (已重定向 2)",
+    Name: "ZDesigner ZR668 (ZPL) (1) (已重定向 2)",
+    PrinterPaperNames: ["Custom"],
+  },
+  {
+    DeviceID: "ZDesigner ZR668 (ZPL) (已重定向 2)",
+    Name: "ZDesigner ZR668 (ZPL) (已重定向 2)",
+    PrinterPaperNames: ["Custom"],
+  },
+  {
+    DeviceID: "Microsoft Print to PDF (已重定向 2)",
+    Name: "Microsoft Print to PDF (已重定向 2)",
+    PrinterPaperNames: ["信纸", "Tabloid", "法律专用纸", "Statement"],
+  },
+  {
+    DeviceID: "Microsoft XPS Document Writer",
+    Name: "Microsoft XPS Document Writer",
+    PrinterPaperNames: ["信纸", "小号信纸", "Tabloid", "Ledger"],
+  },
+  {
+    DeviceID: "Microsoft Print to PDF",
+    Name: "Microsoft Print to PDF",
+    PrinterPaperNames: ["信纸", "Tabloid", "法律专用纸", "Statement"],
+  },
+  {
+    DeviceID: "\\\\JR-PC-0006.jinray.com\\ZDesigner ZD421CN-300dpi ZPL",
+    Name: "\\\\JR-PC-0006.jinray.com\\ZDesigner ZD421CN-300dpi ZPL",
+    PrinterPaperNames: ["Custom"],
+  },
+  {
+    DeviceID: "\\\\10.2.1.169\\ZDesigner ZD421CN-300dpi ZPL",
+    Name: "\\\\10.2.1.169\\ZDesigner ZD421CN-300dpi ZPL",
+    PrinterPaperNames: ["Custom"],
+  },
+  {
+    DeviceID: "\\\\EWPD18.Jinray.com\\ZDesigner ZD421CN-300dpi ZPL",
+    Name: "\\\\EWPD18.Jinray.com\\ZDesigner ZD421CN-300dpi ZPL",
+    PrinterPaperNames: ["Custom"],
+  },
+  {
+    DeviceID: "\\\\jr01171.jinray.com\\ZDesigner ZD421CN-300dpi ZPL",
+    Name: "\\\\jr01171.jinray.com\\ZDesigner ZD421CN-300dpi ZPL",
+    PrinterPaperNames: ["Custom"],
+  },
+];
 
-Status                      :
-Name                        : OneNote
-Caption                     :
-Description                 :
-InstallDate                 :
-DeviceID                    : OneNote
-StartTime                   :
-UntilTime                   :
-WorkOffline                 :
-PSComputerName              :
-CimClass                    : root/cimv2:Win32_Printer
-CimInstanceProperties       : {Caption, Description, InstallDate, Name...}
-CimSystemProperties         : Microsoft.Management.Infrastructure.CimSystemProperties
-
-
-Status                      :
-Name                        : Microsoft XPS Document Writer
-Caption                     :
-Description                 :
-InstallDate                 :
-Availability                :
-DeviceID                    : Microsoft-XPS-Document-Writer
-CimClass                    : root/cimv2:Win32_Printer
-CimInstanceProperties       : {Caption, Description, InstallDate, Name...}
-CimSystemProperties         : Microsoft.Management.Infrastructure.CimSystemProperties
-
-
-Status                      :
-Name                        : Microsoft Print to PDF
-Description                 :
-DeviceID                    : Microsoft_Print_to_PDF
-CimClass                    : root/cimv2:Win32_Printer
-CimInstanceProperties       : {Caption, Description, InstallDate, Name...}
-CimSystemProperties         : Microsoft.Management.Infrastructure.CimSystemProperties
-
-
-Status                      :
-Name                        : Fax
-Description                 :
-InstallDate                 :
-DeviceID                    : Fax
-CimClass                    : root/cimv2:Win32_Printer
-CimInstanceProperties       : {Caption, Description, InstallDate, Name...}
-CimSystemProperties         : Microsoft.Management.Infrastructure.CimSystemProperties
-
-`;
+const mockPrinterListStdout = JSON.stringify(mockPrintersData);
 
 it("returns list of available printers", async () => {
   mockedExecAsync.mockResolvedValue({
@@ -70,34 +76,61 @@ it("returns list of available printers", async () => {
   const result: Printer[] = await getPrinters();
 
   expect(result).toStrictEqual([
-    { deviceId: "OneNote", name: "OneNote", paperSizes: [] },
     {
-      deviceId: "Microsoft-XPS-Document-Writer",
+      deviceId: "ZDesigner ZR668 Plus (ZPL) (已重定向 2)",
+      name: "ZDesigner ZR668 Plus (ZPL) (已重定向 2)",
+      paperSizes: ["Custom"],
+    },
+    {
+      deviceId: "ZDesigner ZR668 (ZPL) (1) (已重定向 2)",
+      name: "ZDesigner ZR668 (ZPL) (1) (已重定向 2)",
+      paperSizes: ["Custom"],
+    },
+    {
+      deviceId: "ZDesigner ZR668 (ZPL) (已重定向 2)",
+      name: "ZDesigner ZR668 (ZPL) (已重定向 2)",
+      paperSizes: ["Custom"],
+    },
+    {
+      deviceId: "Microsoft Print to PDF (已重定向 2)",
+      name: "Microsoft Print to PDF (已重定向 2)",
+      paperSizes: ["信纸", "Tabloid", "法律专用纸", "Statement"],
+    },
+    {
+      deviceId: "Microsoft XPS Document Writer",
       name: "Microsoft XPS Document Writer",
-      paperSizes: [],
+      paperSizes: ["信纸", "小号信纸", "Tabloid", "Ledger"],
     },
     {
-      deviceId: "Microsoft_Print_to_PDF",
+      deviceId: "Microsoft Print to PDF",
       name: "Microsoft Print to PDF",
-      paperSizes: [],
+      paperSizes: ["信纸", "Tabloid", "法律专用纸", "Statement"],
     },
     {
-      deviceId: "Fax",
-      name: "Fax",
-      paperSizes: [],
+      deviceId: "\\\\JR-PC-0006.jinray.com\\ZDesigner ZD421CN-300dpi ZPL",
+      name: "\\\\JR-PC-0006.jinray.com\\ZDesigner ZD421CN-300dpi ZPL",
+      paperSizes: ["Custom"],
+    },
+    {
+      deviceId: "\\\\10.2.1.169\\ZDesigner ZD421CN-300dpi ZPL",
+      name: "\\\\10.2.1.169\\ZDesigner ZD421CN-300dpi ZPL",
+      paperSizes: ["Custom"],
+    },
+    {
+      deviceId: "\\\\EWPD18.Jinray.com\\ZDesigner ZD421CN-300dpi ZPL",
+      name: "\\\\EWPD18.Jinray.com\\ZDesigner ZD421CN-300dpi ZPL",
+      paperSizes: ["Custom"],
+    },
+    {
+      deviceId: "\\\\jr01171.jinray.com\\ZDesigner ZD421CN-300dpi ZPL",
+      name: "\\\\jr01171.jinray.com\\ZDesigner ZD421CN-300dpi ZPL",
+      paperSizes: ["Custom"],
     },
   ]);
 });
 
 it("when did not find any printer info", async () => {
-  const stdout = `
-  Status                      :
-  Caption                     :
-  Description                 :
-  InstallDate                 :
-  Availability                :
-  CimSystemProperties         : Microsoft.Management.Infrastructure.CimSystemProperties
-  `;
+  const stdout = "[]";
   mockedExecAsync.mockResolvedValue({ stdout, stderr: "" });
 
   const result = await getPrinters();
@@ -111,17 +144,13 @@ it("fails with an error", () => {
 });
 
 it("returns list of available printers with custom properties", async () => {
-  const stdout = `
-
-  Status                      : Unknown
-  Name                        : Canon Printer
-  Caption                     : Canon Printer
-  DeviceID                    : Canon-Printer
-  PaperSizesSupported         : {1, 1, 1, 1...}
-  PortName                    : USB001
-  PrinterPaperNames           : {A4, 144mm x 100mm, 2 x 4, 4 x 4...}
-  
-  `;
+  const stdout = JSON.stringify([
+    {
+      DeviceID: "Canon-Printer",
+      Name: "Canon Printer",
+      PrinterPaperNames: ["A4", "144mm x 100mm", "2 x 4", "4 x 4"],
+    },
+  ]);
 
   mockedExecAsync.mockResolvedValue({
     stdout,

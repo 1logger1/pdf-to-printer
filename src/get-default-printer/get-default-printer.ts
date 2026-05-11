@@ -1,6 +1,5 @@
 import execFileAsync from "../utils/exec-file-async";
 import throwIfUnsupportedOperatingSystem from "../utils/throw-if-unsupported-os";
-import isValidPrinter from "../utils/windows-printer-valid";
 import { Printer } from "..";
 
 /**
@@ -27,20 +26,21 @@ async function getDefaultPrinter(): Promise<Printer | null> {
 
     const { stdout } = await execFileAsync("Powershell.exe", [
       "-Command",
-      `Get-CimInstance Win32_Printer -Property DeviceID,Name,PrinterPaperNames -Filter Default=true`,
+      `Get-CimInstance Win32_Printer -Property DeviceID,Name,PrinterPaperNames -Filter Default=true | Select-Object DeviceID,Name,PrinterPaperNames | ConvertTo-Json -Compress`,
     ]);
 
-    const printer = stdout.trim();
+    if (!stdout || !stdout.trim()) return null;
+    const items = JSON.parse(stdout);
+    if (!items || items.length === 0) return null;
 
-    // If stdout is empty, there is no default printer
-    if (!stdout) return null;
+    const item = items[0];
+    if (!item.DeviceID || !item.Name) return null;
 
-    const { isValid, printerData } = isValidPrinter(printer);
-
-    // DeviceID or Name not found
-    if (!isValid) return null;
-
-    return printerData;
+    return {
+      deviceId: item.DeviceID,
+      name: item.Name,
+      paperSizes: item.PrinterPaperNames || [],
+    };
   } catch (error) {
     throw error;
   }

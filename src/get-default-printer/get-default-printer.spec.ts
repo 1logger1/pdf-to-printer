@@ -7,19 +7,14 @@ jest.mock("../utils/throw-if-unsupported-os");
 jest.mock("../utils/exec-file-async");
 const mockedExecAsync = mocked(execAsync);
 
-const mockDefaultPrinterStdout = `
-
-Status                      :
-Name                        : Microsoft Print to PDF
-Caption                     :
-Description                 :
-InstallDate                 :
-Availability                :
-DeviceID                    : Microsoft Print to PDF
-CimClass                    : root/cimv2:Win32_Printer
-CimInstanceProperties       : {Caption, Description, InstallDate, Name...}
-CimSystemProperties         : Microsoft.Management.Infrastructure.CimSystemProperties
-`;
+const mockDefaultPrinterData = [
+  {
+    DeviceID: "Microsoft Print to PDF",
+    Name: "Microsoft Print to PDF",
+    PrinterPaperNames: [],
+  },
+];
+const mockDefaultPrinterStdout = JSON.stringify(mockDefaultPrinterData);
 
 it("gets the default printer", async () => {
   mockedExecAsync.mockResolvedValue({
@@ -45,14 +40,9 @@ it("returns null when default printer is not defined", async () => {
 });
 
 it("when did not find any printer info", async () => {
-  const stdout = `
-  Status                      :
-  Caption                     :
-  Description                 :
-  InstallDate                 :
-  Availability                :
-  CimSystemProperties         : Microsoft.Management.Infrastructure.CimSystemProperties
-  `;
+  const stdout = JSON.stringify([
+    { DeviceID: "", Name: "", PrinterPaperNames: [] },
+  ]);
   mockedExecAsync.mockResolvedValue({ stdout, stderr: "" });
 
   const result = await getDefaultPrinter();
@@ -66,16 +56,13 @@ it("throws when execAsync fails", () => {
 });
 
 it("gets the default printer with custom and repeated properties", async () => {
-  const stdout = `
-
-  Name                        : Microsoft Print to PDF
-  Caption                     : Microsoft Print to PDF
-  DeviceID                    : Microsoft Print to PDF
-  PaperSizesSupported         : {1, 1, 1, 1...}
-  PortName                    : USB001
-  PrinterPaperNames           : {A4, 144mm x 100mm}
-  
-  `;
+  const stdout = JSON.stringify([
+    {
+      DeviceID: "Microsoft Print to PDF",
+      Name: "Microsoft Print to PDF",
+      PrinterPaperNames: ["A4", "144mm x 100mm"],
+    },
+  ]);
 
   mockedExecAsync.mockResolvedValue({
     stdout,

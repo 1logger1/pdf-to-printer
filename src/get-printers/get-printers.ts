@@ -1,5 +1,4 @@
 import execFileAsync from "../utils/exec-file-async";
-import isValidPrinter from "../utils/windows-printer-valid";
 import throwIfUnsupportedOperatingSystem from "../utils/throw-if-unsupported-os";
 import { Printer } from "..";
 
@@ -20,29 +19,23 @@ import { Printer } from "..";
  * ```
  */
 async function getPrinters(): Promise<Printer[]> {
-  function stdoutHandler(stdout: string) {
-    const printers: Printer[] = [];
-
-    stdout
-      .split(/(\r?\n){2,}/)
-      .map((printer) => printer.trim())
-      .filter((printer) => !!printer)
-      .forEach((printer) => {
-        const { isValid, printerData } = isValidPrinter(printer);
-
-        if (!isValid) return;
-
-        printers.push(printerData);
-      });
-
-    return printers;
+  function stdoutHandler(stdout: string): Printer[] {
+    if (!stdout) return [];
+    const items = JSON.parse(stdout);
+    return items
+      .filter((item: any) => item.DeviceID && item.Name)
+      .map((item: any) => ({
+        deviceId: item.DeviceID,
+        name: item.Name,
+        paperSizes: item.PrinterPaperNames || [],
+      }));
   }
 
   try {
     throwIfUnsupportedOperatingSystem();
     const { stdout } = await execFileAsync("Powershell.exe", [
       "-Command",
-      `Get-CimInstance Win32_Printer -Property DeviceID,Name,PrinterPaperNames`,
+      `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-CimInstance Win32_Printer -Property DeviceID,Name,PrinterPaperNames | Select-Object DeviceID,Name,PrinterPaperNames | ConvertTo-Json -Compress`,
     ]);
     return stdoutHandler(stdout);
   } catch (error) {
